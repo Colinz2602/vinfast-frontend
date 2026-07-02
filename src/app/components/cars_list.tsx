@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Calculator, Menu } from "lucide-react";
+import QuoteModal from "./quote_modal"; // Import Modal
 
 interface CarData {
   id: number;
@@ -14,7 +15,6 @@ interface CarData {
   is_featured: boolean;
 }
 
-// Hàm tạo ID chuẩn
 export const generateSlugId = (text: string) => {
   return text
     .toLowerCase()
@@ -29,8 +29,8 @@ export const generateSlugId = (text: string) => {
 const CarList: React.FC = () => {
   const [cars, setCars] = useState<CarData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isQuoteOpen, setIsQuoteOpen] = useState(false); // Thêm state cho Modal
 
-  // Fetch dữ liệu
   useEffect(() => {
     const fetchCars = async () => {
       try {
@@ -50,7 +50,6 @@ const CarList: React.FC = () => {
             }
           }
 
-          // Trích xuất chính xác tên của loại xe từ object relation
           const carTypeData = attrs.car_type;
           const carTypeName = carTypeData?.name || "Chưa phân loại";
 
@@ -82,16 +81,15 @@ const CarList: React.FC = () => {
 
   useEffect(() => {
     if (!isLoading) {
-      const hash = window.location.hash; // Lấy đoạn #... từ URL
+      const hash = window.location.hash;
       if (hash) {
-        // Dùng setTimeout một chút để đảm bảo React đã render xong các thẻ DOM
         setTimeout(() => {
           const id = hash.replace("#", "");
           const element = document.getElementById(id);
           if (element) {
             element.scrollIntoView({ behavior: "smooth" });
           }
-        }, 300); // Thời gian chờ 300ms là đủ an toàn
+        }, 300);
       }
     }
   }, [isLoading]);
@@ -109,7 +107,11 @@ const CarList: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    // Thêm id="danh-sach-xe" để scroll từ Navbutton
+    <div
+      id="danh-sach-xe"
+      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10"
+    >
       {isLoading ? (
         <div className="animate-pulse flex items-center justify-center py-20 text-gray-500">
           Đang tải danh sách xe...
@@ -156,10 +158,16 @@ const CarList: React.FC = () => {
                   </Link>
 
                   <div className="flex gap-3 mt-auto pt-4 border-t border-gray-100">
-                    <button className="flex-1 bg-[#3b66ff] hover:bg-blue-700 text-white py-2.5 rounded text-[13px] font-semibold flex items-center justify-center gap-1 transition-colors">
+                    <button
+                      onClick={() => setIsQuoteOpen(true)} // Mở modal
+                      className="flex-1 bg-[#3b66ff] hover:bg-blue-700 text-white py-2.5 rounded text-[13px] font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    >
                       <Calculator className="w-4 h-4" /> BÁO GIÁ
                     </button>
-                    <button className="flex-1 bg-white border border-[#3b66ff] text-[#3b66ff] hover:bg-blue-50 py-2.5 rounded text-[13px] font-semibold flex items-center justify-center gap-1 transition-colors">
+                    <button
+                      onClick={() => setIsQuoteOpen(true)} // Mở modal
+                      className="flex-1 bg-white border border-[#3b66ff] text-[#3b66ff] hover:bg-blue-50 py-2.5 rounded text-[13px] font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                    >
                       <Menu className="w-4 h-4" /> LÁI THỬ
                     </button>
                   </div>
@@ -169,6 +177,9 @@ const CarList: React.FC = () => {
           </div>
         ))
       )}
+
+      {/* Render Modal */}
+      <QuoteModal isOpen={isQuoteOpen} onClose={() => setIsQuoteOpen(false)} />
     </div>
   );
 };

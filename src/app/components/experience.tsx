@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation"; // Import useRouter
+import QuoteModal from "./quote_modal"; // Import Modal
 
 interface ExperienceData {
   content_text: string;
@@ -14,11 +16,12 @@ const Experience: React.FC = () => {
     null,
   );
   const [isLoading, setIsLoading] = useState(true);
+  const [isQuoteOpen, setIsQuoteOpen] = useState(false); // State cho modal
+  const router = useRouter(); // Khởi tạo router
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Lấy thông tin Showroom từ Global Settings
         const API_URL =
           process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
 
@@ -29,7 +32,6 @@ const Experience: React.FC = () => {
           setShowroom(attrsSettings.showroom);
         }
 
-        // Lấy nội dung Trải nghiệm từ API experience
         const resExp = await fetch(
           `${API_URL}/api/experience?populate[experience][populate]=*`,
         );
@@ -68,7 +70,6 @@ const Experience: React.FC = () => {
     fetchData();
   }, []);
 
-  // Trong lúc đợi API hoặc nếu dữ liệu trống, hiển thị màn hình chờ (Skeleton)
   if (isLoading || !experienceData) {
     return (
       <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -82,7 +83,6 @@ const Experience: React.FC = () => {
 
   return (
     <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row gap-8 mb-12 items-start justify-between">
         <div className="w-full md:w-1/2 flex flex-col">
           <h2 className="text-[28px] lg:text-[32px] font-bold text-gray-900 uppercase mb-2">
@@ -99,7 +99,6 @@ const Experience: React.FC = () => {
         </div>
       </div>
 
-      {/* Image Cards Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
         {experienceData.content_images.map((imgUrl, index) => {
           const isEven = index % 2 === 0;
@@ -111,10 +110,15 @@ const Experience: React.FC = () => {
             : "Lái thử xe VinFast và trải nghiệm.";
           const btnText = isEven ? "Bảng giá xe" : "Lái thử xe";
 
+          // Gắn Action dựa trên loại nút
+          const handleAction = isEven
+            ? () => router.push("/price_list")
+            : () => setIsQuoteOpen(true);
+
           return (
             <div
               key={index}
-              className="relative group overflow-hidden bg-gray-200 cursor-pointer rounded-sm shadow-md"
+              className="relative group overflow-hidden bg-gray-200 rounded-sm shadow-md"
             >
               <img
                 src={imgUrl}
@@ -130,7 +134,10 @@ const Experience: React.FC = () => {
                 </h3>
                 <p className="text-gray-300 text-[15px] mb-6">{cardDesc}</p>
                 <div className="pointer-events-auto">
-                  <button className="bg-[#3b66ff] hover:bg-blue-700 text-white py-2.5 px-6 font-medium transition-colors flex items-center gap-2 cursor-pointer">
+                  <button
+                    onClick={handleAction}
+                    className="bg-[#3b66ff] hover:bg-blue-700 text-white py-2.5 px-6 font-medium transition-colors flex items-center gap-2 cursor-pointer"
+                  >
                     {btnText} <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -139,6 +146,9 @@ const Experience: React.FC = () => {
           );
         })}
       </div>
+
+      {/* Render Modal */}
+      <QuoteModal isOpen={isQuoteOpen} onClose={() => setIsQuoteOpen(false)} />
     </section>
   );
 };

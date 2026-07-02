@@ -151,19 +151,19 @@ const Footer: React.FC = () => {
                   Trang chủ
                 </a>
                 <a
-                  href="#"
+                  href="/price_list"
                   className="hover:text-white uppercase transition-colors"
                 >
                   Bảng giá xe
                 </a>
                 <a
-                  href="#"
+                  href="/privacy_policy"
                   className="hover:text-white uppercase transition-colors"
                 >
                   Chính sách bảo mật
                 </a>
                 <a
-                  href="#"
+                  href="/contact"
                   className="hover:text-white uppercase transition-colors"
                 >
                   Liên hệ

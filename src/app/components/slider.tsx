@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-// Định nghĩa kiểu dữ liệu dựa trên cấu trúc trả về từ Strapi của bạn
+
 interface SlideData {
   id: number;
   imageUrl: string;
@@ -14,7 +14,6 @@ const Slider: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Hàm fetch dữ liệu từ Strapi
     const fetchSlides = async () => {
       try {
         const API_URL =
@@ -22,18 +21,14 @@ const Slider: React.FC = () => {
         const res = await fetch(`${API_URL}/api/sliders?populate=*`);
         const data = await res.json();
 
-        // Tạo một mảng rỗng để chứa toàn bộ hình ảnh
         const allSlides: SlideData[] = [];
 
-        // Duyệt qua từng bản ghi slider từ API
         data.data.forEach((item: any) => {
-          // Kiểm tra xem trường image có dữ liệu và là một mảng hay không
           if (item.image && Array.isArray(item.image)) {
-            // Lặp qua tất cả các ảnh có trong trường image này
             item.image.forEach((img: any) => {
               const imgUrl = img.url;
               allSlides.push({
-                id: img.id, // Dùng ID của chính bức ảnh để đảm bảo key không bị trùng lặp
+                id: img.id,
                 imageUrl: imgUrl.startsWith("http")
                   ? imgUrl
                   : `${API_URL}${imgUrl}`,
@@ -53,7 +48,6 @@ const Slider: React.FC = () => {
     fetchSlides();
   }, []);
 
-  // Tự động chuyển slide sau mỗi 5 giây
   useEffect(() => {
     if (slides.length === 0) return;
     const interval = setInterval(() => {
@@ -79,54 +73,54 @@ const Slider: React.FC = () => {
   };
 
   if (isLoading) {
+    // Sửa lại khung loading cho tương ứng tỷ lệ mới
     return (
-      <div className="w-full h-125 md:h-150 bg-gray-200 animate-pulse"></div>
+      <div className="w-full aspect-[16/9] md:h-150 lg:h-175 bg-gray-200 animate-pulse"></div>
     );
   }
 
   if (slides.length === 0) return null;
 
   return (
-    <div className="relative w-full h-75 smsm:h-100 md:h-150 lg:h-175 group overflow-hidden">
+    // SỬA Ở ĐÂY: Thêm aspect-[16/9] cho mobile, giữ fixed height cho desktop
+    <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] md:aspect-auto md:h-150 lg:h-175 group overflow-hidden bg-gray-50">
       <div
         className="w-full h-full flex flex-nowrap transition-transform duration-500 ease-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {slides.map((slide) => (
           <div key={slide.id} className="w-full h-full flex-none relative">
+            {/* SỬA Ở ĐÂY: object-contain trên mobile để hiển thị đủ ảnh, object-cover trên desktop */}
             <img
               src={slide.imageUrl}
               alt={`Slide ${slide.id}`}
-              className="w-full h-full object-cover object-center block"
+              className="w-full h-full object-contain md:object-cover object-center block"
             />
           </div>
         ))}
       </div>
 
-      {/* Nút Arrow Trái */}
       <button
         onClick={prevSlide}
-        className="absolute top-1/2 left-4 md:left-8 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/60 text-white backdrop-blur-sm transition-all cursor-pointer z-10"
+        className="absolute top-1/2 left-2 md:left-8 -translate-y-1/2 w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/60 text-white backdrop-blur-sm transition-all cursor-pointer z-10"
       >
         <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
       </button>
 
-      {/* Nút Arrow Phải */}
       <button
         onClick={nextSlide}
-        className="absolute top-1/2 right-4 md:right-8 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/60 text-white backdrop-blur-sm transition-all cursor-pointer z-10"
+        className="absolute top-1/2 right-2 md:right-8 -translate-y-1/2 w-8 h-8 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/60 text-white backdrop-blur-sm transition-all cursor-pointer z-10"
       >
         <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
       </button>
 
-      {/* Dấu chấm Pagination */}
-      <div className="absolute bottom-6 left-0 right-0 flex justify-center space-x-3 z-10">
+      <div className="absolute bottom-2 md:bottom-6 left-0 right-0 flex justify-center space-x-3 z-10">
         {slides.map((_, slideIndex) => (
           <div
             key={slideIndex}
             onClick={() => goToSlide(slideIndex)}
             className={`transition-all duration-300 rounded-full cursor-pointer shadow-sm 
-              ${currentIndex === slideIndex ? "w-3 h-3 bg-white" : "w-3 h-3 bg-white/50 hover:bg-white/80"}`}
+              ${currentIndex === slideIndex ? "w-2.5 h-2.5 md:w-3 md:h-3 bg-[#2152ff]" : "w-2.5 h-2.5 md:w-3 md:h-3 bg-white/70 hover:bg-white"}`}
           ></div>
         ))}
       </div>
