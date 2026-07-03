@@ -26,6 +26,7 @@ export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
   // Error state
   const [phoneError, setPhoneError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch dữ liệu xe và hotline từ Strapi
   useEffect(() => {
@@ -72,33 +73,36 @@ export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
       return;
     }
     setPhoneError(false);
-
-    // Chuẩn hóa số điện thoại Zalo
-    const formattedHotline = hotline.replace(/[\s\.]/g, "");
-
-    // Tạo nội dung tin nhắn
-    const message = `Chào bạn, tôi muốn nhận báo giá lăn bánh và tư vấn xe:\n- Họ và tên: ${name || "Khách hàng"}\n- Số điện thoại: ${phone}\n- Xe quan tâm: ${selectedCar || "Chưa xác định"}\n- Hình thức mua: ${paymentMethod}`;
+    setIsSubmitting(true);
 
     try {
-      // Tự động copy nội dung vào Clipboard của trình duyệt
-      await navigator.clipboard.writeText(message);
+      const res = await fetch("/api/send_zalo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          phone,
+          selectedCar,
+          paymentMethod,
+        }),
+      });
 
-      // Có thể thêm 1 thông báo nhỏ cho khách hàng biết (dùng alert hoặc toast UI của bạn)
-      alert(
-        "Đã lưu thông tin báo giá! Vui lòng nhấn 'Dán' (Ctrl+V) vào khung chat Zalo để gửi cho chúng tôi nhé.",
-      );
-    } catch (err) {
-      console.error("Không thể tự động copy tin nhắn:", err);
+      const result = await res.json();
+
+      if (result.success) {
+        alert(
+          "Gửi yêu cầu thành công! Chúng tôi sẽ liên hệ lại với bạn sớm nhất.",
+        );
+        onClose();
+      } else {
+        alert("Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi gọi API gửi Zalo:", error);
+      alert("Lỗi kết nối, vui lòng thử lại sau.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Tạo link mở Zalo (Vẫn giữ ?text= để fallback cho thiết bị Mobile)
-    const zaloUrl = `https://zalo.me/${formattedHotline}?text=${encodeURIComponent(message)}`;
-
-    // Mở tab Zalo mới
-    window.open(zaloUrl, "_blank");
-
-    // Đóng modal sau khi gửi
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -219,9 +223,14 @@ export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
             {/* Button Gửi */}
             <button
               type="submit"
-              className="w-full bg-[#3b66ff] hover:bg-blue-700 text-white font-semibold py-3 rounded-sm transition-colors uppercase text-[15px]"
+              disabled={isSubmitting}
+              className={`w-full text-white font-semibold py-3 rounded-sm transition-colors uppercase text-[15px] ${
+                isSubmitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-[#3b66ff] hover:bg-blue-700"
+              }`}
             >
-              Nhận thông tin
+              {isSubmitting ? "Đang gửi..." : "Nhận thông tin"}
             </button>
           </form>
         </div>
