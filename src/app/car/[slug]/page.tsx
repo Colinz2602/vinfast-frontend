@@ -16,6 +16,7 @@ import {
 import MediaTextSection1 from "@/app/car/[slug]/media_text_section1";
 import MediaTextSection2 from "@/app/car/[slug]/media_text_section2";
 import MediaTextSection3 from "@/app/car/[slug]/media_text_section3";
+import QuoteModal from "@/app/components/quote_modal";
 
 const DynamicMediaSection = ({
   title,
@@ -80,6 +81,8 @@ export default function CarDetailPage() {
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
   const [isGalleryFullscreen, setIsGalleryFullscreen] = useState(false);
 
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+
   useEffect(() => {
     if (!slug) return;
 
@@ -138,6 +141,7 @@ export default function CarDetailPage() {
 
     fetchData();
   }, [slug]);
+
   useEffect(() => {
     const activeThumb = document.getElementById(
       `main-thumbnail-${currentImageIndex}`,
@@ -150,6 +154,7 @@ export default function CarDetailPage() {
       });
     }
   }, [currentImageIndex]);
+
   if (isLoading)
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -245,6 +250,7 @@ export default function CarDetailPage() {
       .replace(/[^\w\-]+/g, "");
   };
   const carTypeName = car?.car_type?.name;
+
   return (
     <main className="min-h-screen bg-white flex flex-col">
       <Navbar />
@@ -420,7 +426,11 @@ export default function CarDetailPage() {
 
               {/* Nút Hành Động */}
               <div className="flex gap-3 mb-6">
-                <button className="flex-1 bg-[#3b66ff] hover:bg-blue-700 text-white py-2.5 rounded-sm text-[13px] font-bold flex items-center justify-center gap-2 transition-colors">
+                {/* Thêm onClick gọi QuoteModal */}
+                <button
+                  onClick={() => setIsQuoteModalOpen(true)}
+                  className="flex-1 bg-[#3b66ff] hover:bg-blue-700 text-white py-2.5 rounded-sm text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                >
                   <Gift className="w-4 h-4" /> BÁO GIÁ LĂN BÁNH
                 </button>
                 <a
@@ -453,7 +463,11 @@ export default function CarDetailPage() {
                     Quý khách vui lòng gọi để có giá xe tốt nhất
                   </span>
                 </a>
-                <button className="flex-1 bg-[#4c8bd3] hover:bg-[#3c75b5] text-white py-4 px-4 rounded-md flex flex-col items-center justify-center transition-colors text-center shadow-sm">
+                {/* Thêm onClick gọi QuoteModal */}
+                <button
+                  onClick={() => setIsQuoteModalOpen(true)}
+                  className="flex-1 bg-[#4c8bd3] hover:bg-[#3c75b5] text-white py-4 px-4 rounded-md flex flex-col items-center justify-center transition-colors text-center shadow-sm cursor-pointer"
+                >
                   <span className="text-xl md:text-2xl font-bold mb-1">
                     NHẬN BÁO GIÁ
                   </span>
@@ -641,6 +655,13 @@ export default function CarDetailPage() {
       </div>
 
       <Footer />
+
+      {/* MỚI THÊM: Gọi component QuoteModal ở đây */}
+      <QuoteModal
+        isOpen={isQuoteModalOpen}
+        onClose={() => setIsQuoteModalOpen(false)}
+      />
+
       {/* Modal Phóng To Ảnh*/}
       {isFullscreen && imageList.length > 0 && (
         <div className="fixed inset-0 z-9999 bg-black/90 flex items-center justify-center p-4 backdrop-blur-sm">
