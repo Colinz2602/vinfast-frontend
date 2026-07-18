@@ -14,8 +14,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VinFast Ô Tô",
-  description: "Website for Vinfast",
+  title: "Vinfast Thăng Long - Đại Lý Phân Phối Ô Tô Vinfast Hà Nội",
+  description:
+    "Vinfast Thăng Long. Địa chỉ: 68 Phố Trịnh Văn Bô, Xuân Phương, Nam Từ Liêm, Hà Nội; Phone: 0836588679.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "Vinfast Thăng Long - Đại Lý Phân Phối Ô Tô Vinfast Hà Nội",
+    description:
+      "Vinfast Thăng Long. Địa chỉ: 68 Phố Trịnh Văn Bô, Xuân Phương, Nam Từ Liêm, Hà Nội.",
+    url: "https://vinfast68trinhvanbo.com",
+    siteName: "VinFast Ô Tô",
+    locale: "vi_VN",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
