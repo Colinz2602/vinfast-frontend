@@ -1,4 +1,5 @@
 import React from "react";
+import { formatText } from "@/app/lib/format_text";
 
 interface MediaTextSection3Props {
   title?: string;
@@ -7,22 +8,6 @@ interface MediaTextSection3Props {
     content_images?: any[];
   } | null;
 }
-
-// Hàm dịch Markdown tự tạo
-const formatText = (str: string) => {
-  if (!str) return "";
-  return (
-    str
-      // **: in nghiêng (em)
-      .replace(/\*\*(.*?)\*\*/g, '<em class="italic">$1</em>')
-
-      // *: in đậm (strong)
-      .replace(/\*(.*?)\*/g, '<strong class="font-bold">$1</strong>')
-
-      // xử lý xuống dòng
-      .replace(/\n/g, "<br />")
-  );
-};
 
 export default function MediaTextSection3({
   title,
