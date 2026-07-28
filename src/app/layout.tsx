@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "VinFast 68 Trịnh Văn Bô | Showroom Ô Tô Chính Hãng Hà Nội",
   description:
-    "Vinfast Thăng Long. Địa chỉ: 68 Phố Trịnh Văn Bô, Xuân Phương, Nam Từ Liêm, Hà Nội; Phone: 0836588679.",
+    "Vinfast Thăng Long. Địa chỉ: 68 Phố Trịnh Văn Bô, Xuân Phương, Nam Từ Liêm, Hà Nội; Phone: 0333679471.",
   icons: {
     icon: "/favicon.ico",
   },
