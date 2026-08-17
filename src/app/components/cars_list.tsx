@@ -12,6 +12,7 @@ interface CarData {
   starting_price: number;
   thumbnailUrl: string;
   car_type: string;
+  car_type_order: number;
   is_featured: boolean;
 }
 
@@ -60,6 +61,7 @@ const CarList: React.FC = () => {
             starting_price: attrs.starting_price || 0,
             thumbnailUrl: thumbUrl,
             car_type: carTypeName,
+            car_type_order: carTypeData?.order || 999,
             is_featured: attrs.is_featured || false,
           };
         });
@@ -139,7 +141,11 @@ const CarList: React.FC = () => {
     },
     {} as Record<string, CarData[]>,
   );
-
+  const sortedCarTypes = Object.entries(groupedCars).sort((a, b) => {
+    const orderA = a[1][0]?.car_type_order ?? 999;
+    const orderB = b[1][0]?.car_type_order ?? 999;
+    return orderA - orderB;
+  });
   return (
     // Thêm id="danh-sach-xe" để scroll từ Navbutton
     <div
@@ -151,7 +157,7 @@ const CarList: React.FC = () => {
           Đang tải danh sách xe...
         </div>
       ) : (
-        Object.entries(groupedCars).map(([carType, carsInType]) => (
+        sortedCarTypes.map(([carType, carsInType]) => (
           <div
             key={carType}
             id={generateSlugId(carType)}
