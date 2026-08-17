@@ -11,6 +11,7 @@ interface CarNavData {
   name: string;
   slug: string;
   car_type: string;
+  car_type_order: number;
 }
 
 const generateSlugId = (text: string) => {
@@ -43,7 +44,7 @@ const Navbar: React.FC = () => {
         const API_URL =
           process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
         const res = await fetch(
-          `${API_URL}/api/cars?fields[0]=name&fields[1]=slug&populate[car_type][fields][0]=name`,
+          `${API_URL}/api/cars?fields[0]=name&fields[1]=slug&populate[car_type][fields][0]=name&populate[car_type][fields][1]=order`,
         );
         const data = await res.json();
 
@@ -54,7 +55,47 @@ const Navbar: React.FC = () => {
           name: item.name,
           slug: item.slug,
           car_type: item.car_type?.name || "Khác",
+          car_type_order: item.car_type?.order || 999,
         }));
+
+        const orderOToDien = [
+          "vf-9",
+          "vf-8",
+          "vf-7",
+          "vf-6",
+          "vf-5",
+          "vf-4",
+          "vf-3",
+          "vf-2",
+        ];
+        const orderKhac = ["limo", "minio", "herio", "ec-van", "nerio"];
+
+        cars.sort((a, b) => {
+          const getSortIndex = (car: CarNavData) => {
+            const currentSlug = car.slug.toLowerCase();
+
+            if (car.car_type === "Xe ô tô điện VinFast") {
+              const index = orderOToDien.findIndex((key) =>
+                currentSlug.includes(key.toLowerCase()),
+              );
+              return index === -1 ? 999 : index;
+            } else {
+              const index = orderKhac.findIndex((key) =>
+                currentSlug.includes(key.toLowerCase()),
+              );
+              return index === -1 ? 999 : index;
+            }
+          };
+
+          const indexA = getSortIndex(a);
+          const indexB = getSortIndex(b);
+
+          if (indexA !== indexB) {
+            return indexA - indexB;
+          }
+
+          return a.name.localeCompare(b.name);
+        });
 
         const grouped = cars.reduce(
           (acc, car) => {
@@ -106,6 +147,12 @@ const Navbar: React.FC = () => {
     setMobileDropdown(mobileDropdown === type ? null : type);
   };
 
+  const sortedCarTypes = Object.entries(groupedCars).sort((a, b) => {
+    const orderA = a[1][0]?.car_type_order ?? 999;
+    const orderB = b[1][0]?.car_type_order ?? 999;
+    return orderA - orderB;
+  });
+
   return (
     <>
       <nav className="sticky top-0 w-full bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm z-50">
@@ -136,7 +183,7 @@ const Navbar: React.FC = () => {
                 Trang chủ
               </Link>
 
-              {Object.entries(groupedCars).map(([carType, carsInType]) => {
+              {sortedCarTypes.map(([carType, carsInType]) => {
                 const isCarTypeActive = activeCarType === carType;
 
                 return (
@@ -235,7 +282,7 @@ const Navbar: React.FC = () => {
                 Trang chủ
               </Link>
 
-              {Object.entries(groupedCars).map(([carType, carsInType]) => {
+              {sortedCarTypes.map(([carType, carsInType]) => {
                 const isCarTypeActive = activeCarType === carType;
 
                 return (

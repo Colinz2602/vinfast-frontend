@@ -64,9 +64,43 @@ const CarList: React.FC = () => {
           };
         });
 
-        fetchedCars.sort((a, b) =>
-          a.is_featured === b.is_featured ? 0 : a.is_featured ? -1 : 1,
-        );
+        const orderOToDien = [
+          "vf-9",
+          "vf-8",
+          "vf-7",
+          "vf-6",
+          "vf-5",
+          "vf-4",
+          "vf-3",
+          "vf-2",
+        ];
+        const orderKhac = ["limo", "minio", "herio", "ec-van", "nerio"];
+
+        fetchedCars.sort((a, b) => {
+          const getSortIndex = (car: CarData) => {
+            const currentSlug = car.slug.toLowerCase();
+            if (car.car_type === "Xe ô tô điện VinFast") {
+              const index = orderOToDien.findIndex((key) =>
+                currentSlug.includes(key.toLowerCase()),
+              );
+              return index === -1 ? 999 : index;
+            } else {
+              const index = orderKhac.findIndex((key) =>
+                currentSlug.includes(key.toLowerCase()),
+              );
+              return index === -1 ? 999 : index;
+            }
+          };
+
+          const indexA = getSortIndex(a);
+          const indexB = getSortIndex(b);
+
+          if (indexA !== indexB) {
+            return indexA - indexB;
+          }
+
+          return a.is_featured === b.is_featured ? 0 : a.is_featured ? -1 : 1;
+        });
 
         setCars(fetchedCars);
         setIsLoading(false);

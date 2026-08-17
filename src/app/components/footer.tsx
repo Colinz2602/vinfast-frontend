@@ -8,6 +8,7 @@ interface GlobalSetting {
   showroom: string;
   address: string;
   email: string;
+  disclaimer?: string;
 }
 
 const Footer: React.FC = () => {
@@ -29,6 +30,7 @@ const Footer: React.FC = () => {
           showroom: attrs.showroom,
           address: attrs.address,
           email: attrs.email,
+          disclaimer: attrs.disclaimer,
         });
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu global-setting:", error);
@@ -169,6 +171,11 @@ const Footer: React.FC = () => {
                   Liên hệ
                 </a>
               </div>
+              {settings.disclaimer && (
+                <p className="text-center md:text-left mb-2 text-[13px] text-gray-400 whitespace-pre-line leading-relaxed">
+                  {settings.disclaimer}
+                </p>
+              )}
               <p className="text-center md:text-left mt-2">
                 Copyright 2026 © vinfast68trinhvanbo.com
               </p>
