@@ -170,7 +170,7 @@ const Footer: React.FC = () => {
                 </a>
               </div>
               <p className="text-center md:text-left mt-2">
-                Copyright 2026 © vinfastdaily.com
+                Copyright 2026 © vinfast68trinhvanbo.com
               </p>
             </div>
           </div>
