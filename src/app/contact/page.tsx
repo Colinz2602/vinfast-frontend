@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Navbar from "@/app/components/navbar";
-import Footer from "@/app/components/footer";
 import { Phone } from "lucide-react";
 
 interface GlobalSetting {
@@ -74,7 +72,7 @@ export default function ContactPage() {
           <img
             src={settings?.bgImageUrl}
             alt="Showroom Background"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover "
           />
         </div>
 
