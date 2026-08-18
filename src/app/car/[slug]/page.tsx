@@ -253,8 +253,6 @@ export default function CarDetailPage() {
 
   return (
     <main className="min-h-screen bg-white flex flex-col">
-      <Navbar />
-
       <div className="grow">
         {/* Container Chính */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -654,9 +652,7 @@ export default function CarDetailPage() {
         </div>
       </div>
 
-      <Footer />
-
-      {/* MỚI THÊM: Gọi component QuoteModal ở đây */}
+      {/* Gọi component QuoteModal ở đây */}
       <QuoteModal
         isOpen={isQuoteModalOpen}
         onClose={() => setIsQuoteModalOpen(false)}

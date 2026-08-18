@@ -1,24 +1,41 @@
-import Navbar from "./components/navbar";
 import Navbutton from "./components/navbutton";
 import Slider from "./components/slider";
 import CarList from "./components/cars_list";
-import Footer from "./components/footer";
 import Experience from "./components/experience";
 
-export default function Home() {
+const API_URL =
+  process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://127.0.0.1:1337";
+
+async function getHomeData() {
+  const [sliderRes, carsRes, expRes] = await Promise.all([
+    fetch(`${API_URL}/api/sliders?populate=*`, {
+      next: { revalidate: 60 },
+    }),
+    // Đưa query về populate=* cơ bản, vì có revalidate: 60 nên không sợ quá tải database nữa
+    fetch(`${API_URL}/api/cars?populate=*`, {
+      next: { revalidate: 60 },
+    }),
+    fetch(`${API_URL}/api/experience?populate[experience][populate]=*`, {
+      next: { revalidate: 60 },
+    }),
+  ]);
+
+  return {
+    sliders: await sliderRes.json(),
+    cars: await carsRes.json(),
+    experience: await expRes.json(),
+  };
+}
+
+export default async function Home() {
+  const data = await getHomeData();
+
   return (
     <main className="min-h-screen bg-gray-50 text-gray-900">
-      <Navbar />
-
-      <Slider />
-
+      <Slider initialData={data.sliders?.data} />
       <Navbutton />
-
-      <CarList />
-
-      <Experience />
-
-      <Footer />
+      <CarList initialData={data.cars?.data} />
+      <Experience initialData={data.experience?.data} />
     </main>
   );
 }

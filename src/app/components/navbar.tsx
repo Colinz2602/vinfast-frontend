@@ -6,6 +6,10 @@ import { ChevronDown, Menu, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import QuoteModal from "./quote_modal";
 
+interface NavbarProps {
+  initialCars?: any[];
+}
+
 interface CarNavData {
   id: number;
   name: string;
@@ -25,95 +29,67 @@ const generateSlugId = (text: string) => {
     .replace(/[^\w\-]+/g, "");
 };
 
-const Navbar: React.FC = () => {
-  const [groupedCars, setGroupedCars] = useState<Record<string, CarNavData[]>>(
-    {},
-  );
+const Navbar: React.FC<NavbarProps> = ({ initialCars = [] }) => {
   const pathname = usePathname();
   const router = useRouter();
-
   const [isQuoteOpen, setIsQuoteOpen] = useState(false);
 
   // State quản lý Mobile Menu
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchCarsForNav = async () => {
-      try {
-        const API_URL =
-          process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
-        const res = await fetch(
-          `${API_URL}/api/cars?fields[0]=name&fields[1]=slug&populate[car_type][fields][0]=name&populate[car_type][fields][1]=order`,
+  // 3. KHÔNG DÙNG useEffect - Định dạng thẳng data nhận được từ props initialCars
+  const cars: CarNavData[] = initialCars.map((item: any) => ({
+    id: item.id,
+    name: item.name,
+    slug: item.slug,
+    car_type: item.car_type?.name || "Khác",
+    car_type_order: item.car_type?.order || 999,
+  }));
+
+  const orderOToDien = [
+    "vf-9",
+    "vf-8",
+    "vf-7",
+    "vf-6",
+    "vf-5",
+    "vf-4",
+    "vf-3",
+    "vf-2",
+  ];
+  const orderKhac = ["limo", "minio", "herio", "ec-van", "nerio"];
+
+  cars.sort((a, b) => {
+    const getSortIndex = (car: CarNavData) => {
+      const currentSlug = car.slug.toLowerCase();
+      if (car.car_type === "Xe Ô tô Điện VinFast") {
+        const index = orderOToDien.findIndex((key) =>
+          currentSlug.includes(key.toLowerCase()),
         );
-        const data = await res.json();
-
-        if (!data || !data.data || !Array.isArray(data.data)) return;
-
-        const cars: CarNavData[] = data.data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          slug: item.slug,
-          car_type: item.car_type?.name || "Khác",
-          car_type_order: item.car_type?.order || 999,
-        }));
-
-        const orderOToDien = [
-          "vf-9",
-          "vf-8",
-          "vf-7",
-          "vf-6",
-          "vf-5",
-          "vf-4",
-          "vf-3",
-          "vf-2",
-        ];
-        const orderKhac = ["limo", "minio", "herio", "ec-van", "nerio"];
-
-        cars.sort((a, b) => {
-          const getSortIndex = (car: CarNavData) => {
-            const currentSlug = car.slug.toLowerCase();
-
-            if (car.car_type === "Xe ô tô điện VinFast") {
-              const index = orderOToDien.findIndex((key) =>
-                currentSlug.includes(key.toLowerCase()),
-              );
-              return index === -1 ? 999 : index;
-            } else {
-              const index = orderKhac.findIndex((key) =>
-                currentSlug.includes(key.toLowerCase()),
-              );
-              return index === -1 ? 999 : index;
-            }
-          };
-
-          const indexA = getSortIndex(a);
-          const indexB = getSortIndex(b);
-
-          if (indexA !== indexB) {
-            return indexA - indexB;
-          }
-
-          return a.name.localeCompare(b.name);
-        });
-
-        const grouped = cars.reduce(
-          (acc, car) => {
-            if (!acc[car.car_type]) acc[car.car_type] = [];
-            acc[car.car_type].push(car);
-            return acc;
-          },
-          {} as Record<string, CarNavData[]>,
+        return index === -1 ? 999 : index;
+      } else {
+        const index = orderKhac.findIndex((key) =>
+          currentSlug.includes(key.toLowerCase()),
         );
-
-        setGroupedCars(grouped);
-      } catch (error) {
-        console.error("Lỗi khi tải dữ liệu menu xe:", error);
+        return index === -1 ? 999 : index;
       }
     };
+    const indexA = getSortIndex(a);
+    const indexB = getSortIndex(b);
+    if (indexA !== indexB) {
+      return indexA - indexB;
+    }
+    return a.name.localeCompare(b.name);
+  });
 
-    fetchCarsForNav();
-  }, []);
+  const groupedCars = cars.reduce(
+    (acc, car) => {
+      if (!acc[car.car_type]) acc[car.car_type] = [];
+      acc[car.car_type].push(car);
+      return acc;
+    },
+    {} as Record<string, CarNavData[]>,
+  );
 
   // Xác định carType nào đang Active (nếu đang ở trang chi tiết xe)
   let activeCarType = "";

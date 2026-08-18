@@ -10,44 +10,12 @@ interface GlobalSetting {
   email: string;
   disclaimer?: string;
 }
-
-const Footer: React.FC = () => {
-  const [settings, setSettings] = useState<GlobalSetting | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchGlobalSettings = async () => {
-      try {
-        const API_URL =
-          process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
-        const res = await fetch(`${API_URL}/api/global-setting`);
-        const data = await res.json();
-
-        const attrs = data?.data || {};
-
-        setSettings({
-          hotline: attrs.hotline,
-          showroom: attrs.showroom,
-          address: attrs.address,
-          email: attrs.email,
-          disclaimer: attrs.disclaimer,
-        });
-      } catch (error) {
-        console.error("Lỗi khi tải dữ liệu global-setting:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchGlobalSettings();
-  }, []);
-
-  if (isLoading) {
-    return <div className="w-full h-64 bg-gray-100 animate-pulse"></div>;
-  }
-
+interface FooterProps {
+  settings?: any;
+}
+const Footer: React.FC<FooterProps> = ({ settings }) => {
   if (!settings) {
-    return null;
+    return <div className="w-full h-64 bg-gray-100 animate-pulse"></div>;
   }
 
   return (

@@ -40,8 +40,6 @@ export default function PrivacyPolicyPage() {
 
   return (
     <main className="min-h-screen bg-white flex flex-col">
-      <Navbar />
-
       <div className="grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full text-gray-800">
         <h1 className="text-[28px] md:text-[32px] font-bold mb-6 text-[#2152ff]">
           Chính sách bảo mật về quyền riêng tư
@@ -218,8 +216,6 @@ export default function PrivacyPolicyPage() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </main>
   );
 }

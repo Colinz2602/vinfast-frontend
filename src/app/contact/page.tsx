@@ -54,21 +54,17 @@ export default function ContactPage() {
   if (isLoading) {
     return (
       <main className="min-h-screen bg-white flex flex-col">
-        <Navbar />
         <div className="grow flex items-center justify-center bg-gray-50">
           <div className="animate-pulse text-gray-500 font-medium">
             Đang tải thông tin liên hệ...
           </div>
         </div>
-        <Footer />
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-white flex flex-col">
-      <Navbar />
-
       {/* Hero Section Liên Hệ */}
       <div className="grow w-full relative bg-black flex items-center min-h-125 md:min-h-150">
         {/* Background Image & Overlay */}
@@ -111,8 +107,6 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </main>
   );
 }

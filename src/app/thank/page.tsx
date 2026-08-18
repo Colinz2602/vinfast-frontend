@@ -28,8 +28,6 @@ export default function ThankYouPage() {
   if (!isAuthorized) return null;
   return (
     <main className="min-h-screen bg-white flex flex-col">
-      <Navbar />
-
       <div className="grow flex items-center justify-center bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-lg w-full bg-white rounded-xl p-10 text-center border border-gray-100">
           {/* Biểu tượng Checkmark */}
@@ -55,8 +53,6 @@ export default function ThankYouPage() {
           </Link>
         </div>
       </div>
-
-      <Footer />
     </main>
   );
 }

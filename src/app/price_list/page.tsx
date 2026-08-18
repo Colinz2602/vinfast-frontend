@@ -84,8 +84,6 @@ export default function PriceListPage() {
 
   return (
     <main className="min-h-screen bg-white flex flex-col">
-      <Navbar />
-
       <div className="grow max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
         <div className="mb-10 text-gray-800">
           <h1 className="text-[28px] md:text-[32px] font-bold uppercase mb-4">
@@ -184,8 +182,6 @@ export default function PriceListPage() {
           hotline để nhận thông tin ưu đãi và báo giá lăn bánh xe ô tô VinFast.
         </p>
       </div>
-
-      <Footer />
     </main>
   );
 }

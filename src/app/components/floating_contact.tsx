@@ -3,33 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { Phone } from "lucide-react";
 
-const FloatingContact = () => {
-  const [hotline, setHotline] = useState<string>("0836588679");
+interface FloatingContactProps {
+  settings?: any;
+}
 
-  useEffect(() => {
-    const fetchGlobalSettings = async () => {
-      try {
-        const API_URL =
-          process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
-        const res = await fetch(`${API_URL}/api/global-setting`);
-        const data = await res.json();
-
-        const attrs = data?.data || {};
-
-        if (attrs.hotline) {
-          setHotline(attrs.hotline);
-        }
-      } catch (error) {
-        console.error(
-          "Lỗi khi tải dữ liệu global-setting cho FloatingContact:",
-          error,
-        );
-      }
-    };
-
-    fetchGlobalSettings();
-  }, []);
-
+const FloatingContact: React.FC<FloatingContactProps> = ({ settings }) => {
+  const hotline = settings?.hotline || "0333679471";
   const formattedHotline = hotline.replace(/[\s\.]/g, "");
 
   return (

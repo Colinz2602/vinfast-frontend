@@ -1,85 +1,50 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation"; // Import useRouter
-import QuoteModal from "./quote_modal"; // Import Modal
+import { useRouter } from "next/navigation";
+import QuoteModal from "./quote_modal";
 
-interface ExperienceData {
-  content_text: string;
-  content_images: string[];
+interface ExperienceProps {
+  initialData: any;
+  showroomName?: string;
 }
 
-const Experience: React.FC = () => {
-  const [showroom, setShowroom] = useState<string>("");
-  const [experienceData, setExperienceData] = useState<ExperienceData | null>(
-    null,
-  );
-  const [isLoading, setIsLoading] = useState(true);
-  const [isQuoteOpen, setIsQuoteOpen] = useState(false); // State cho modal
-  const router = useRouter(); // Khởi tạo router
+const Experience: React.FC<ExperienceProps> = ({
+  initialData,
+  showroomName = "VinFast",
+}) => {
+  const [isQuoteOpen, setIsQuoteOpen] = useState(false);
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const API_URL =
-          process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+  const API_URL =
+    process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
 
-        const resSettings = await fetch(`${API_URL}/api/global-setting`);
-        const dataSettings = await resSettings.json();
-        const attrsSettings = dataSettings?.data || {};
-        if (attrsSettings.showroom) {
-          setShowroom(attrsSettings.showroom);
+  // Parse dữ liệu từ Server Component truyền xuống (Sửa lỗi Array/Object)
+  let experienceData = null;
+  const attrsExp = initialData?.attributes || initialData || {};
+  const expArray = attrsExp.experience || [];
+
+  if (expArray.length > 0) {
+    const firstExp = expArray[0];
+    const images: string[] = [];
+
+    if (firstExp.content_images && Array.isArray(firstExp.content_images)) {
+      firstExp.content_images.forEach((img: any) => {
+        const url = img?.url;
+        if (url) {
+          images.push(url.startsWith("http") ? url : `${API_URL}${url}`);
         }
+      });
+    }
 
-        const resExp = await fetch(
-          `${API_URL}/api/experience?populate[experience][populate]=*`,
-        );
-        const dataExp = await resExp.json();
-        const attrsExp = dataExp?.data?.attributes || dataExp?.data || {};
-
-        const expArray = attrsExp.experience || [];
-        if (expArray.length > 0) {
-          const firstExp = expArray[0];
-          const images: string[] = [];
-
-          if (
-            firstExp.content_images &&
-            Array.isArray(firstExp.content_images)
-          ) {
-            firstExp.content_images.forEach((img: any) => {
-              const url = img?.url;
-              if (url) {
-                images.push(url.startsWith("http") ? url : `${API_URL}${url}`);
-              }
-            });
-          }
-
-          setExperienceData({
-            content_text: firstExp.content_text || "",
-            content_images: images,
-          });
-        }
-      } catch (error) {
-        console.error("Lỗi khi tải dữ liệu Experience:", error);
-      } finally {
-        setIsLoading(false);
-      }
+    experienceData = {
+      content_text: firstExp.content_text || "",
+      content_images: images,
     };
-
-    fetchData();
-  }, []);
-
-  if (isLoading || !experienceData) {
-    return (
-      <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="w-full h-32 bg-gray-200 animate-pulse mb-12 rounded-md"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          <div className="w-full h-87.5 md:h-105 bg-gray-200 animate-pulse rounded-md"></div>
-        </div>
-      </section>
-    );
   }
+
+  if (!experienceData) return null;
 
   return (
     <section className="w-full py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -89,7 +54,7 @@ const Experience: React.FC = () => {
             Trải nghiệm xe VinFast
           </h2>
           <h3 className="text-[22px] lg:text-[24px] font-semibold text-[#3b66ff] uppercase md:text-left md:mr-10">
-            {showroom}
+            {showroomName}
           </h3>
         </div>
         <div className="w-full md:w-1/2">
@@ -110,7 +75,6 @@ const Experience: React.FC = () => {
             : "Lái thử xe VinFast và trải nghiệm.";
           const btnText = isEven ? "Bảng giá xe" : "Lái thử xe";
 
-          // Gắn Action dựa trên loại nút
           const handleAction = isEven
             ? () => router.push("/price_list")
             : () => setIsQuoteOpen(true);
@@ -147,7 +111,6 @@ const Experience: React.FC = () => {
         })}
       </div>
 
-      {/* Render Modal */}
       <QuoteModal isOpen={isQuoteOpen} onClose={() => setIsQuoteOpen(false)} />
     </section>
   );
