@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { User, Phone, Search, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface CarOption {
   id: number;
@@ -14,6 +15,7 @@ interface QuoteModalProps {
 }
 
 export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
+  const router = useRouter();
   const [cars, setCars] = useState<CarOption[]>([]);
   const [hotline, setHotline] = useState<string>("");
 
@@ -90,16 +92,15 @@ export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
       const result = await res.json();
 
       if (result.success) {
-        alert(
-          "Gửi yêu cầu thành công! Chúng tôi sẽ liên hệ lại với bạn sớm nhất.",
-        );
+        sessionStorage.setItem("form_submitted", "true");
         onClose();
+        router.push("/thank");
       } else {
         alert("Có lỗi xảy ra khi gửi yêu cầu. Vui lòng thử lại sau.");
       }
     } catch (error) {
       console.error("Lỗi khi gọi API gửi Zalo:", error);
-      alert("Lỗi kết nối, vui lòng thử lại sau.");
+      alert("Lỗi mạng, vui lòng thử lại sau.");
     } finally {
       setIsSubmitting(false);
     }
@@ -128,7 +129,7 @@ export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
             onError={(e) => {
               // Fallback nếu chưa có ảnh
               (e.target as HTMLImageElement).src =
-                "https://shop.vinfastauto.com/on/demandware.static/-/Sites-app_vinfast_vn-Library/default/dw112f483c/images/PDP/VF8/banner-b2.jpg";
+                "https://placehold.co/768x768/e2e8f0/475569?text=VinFast+Banner";
             }}
           />
         </div>
