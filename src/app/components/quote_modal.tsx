@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { User, Phone, Search, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface CarOption {
   id: number;
@@ -24,9 +25,11 @@ export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
   const [phone, setPhone] = useState("");
   const [selectedCar, setSelectedCar] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Trả thẳng");
+  const [isAgreed, setIsAgreed] = useState(false); // Trạng thái checkbox đồng ý
 
   // Error state
   const [phoneError, setPhoneError] = useState(false);
+  const [agreementError, setAgreementError] = useState(false); // Lỗi khi chưa tick checkbox
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -69,12 +72,26 @@ export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    let hasError = false;
+
     // Validate bắt buộc nhập số điện thoại
     if (!phone.trim()) {
       setPhoneError(true);
-      return;
+      hasError = true;
+    } else {
+      setPhoneError(false);
     }
-    setPhoneError(false);
+
+    // Validate bắt buộc tick đồng ý
+    if (!isAgreed) {
+      setAgreementError(true);
+      hasError = true;
+    } else {
+      setAgreementError(false);
+    }
+
+    if (hasError) return;
+
     setIsSubmitting(true);
 
     try {
@@ -171,7 +188,7 @@ export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
             </div>
             {phoneError && (
               <span className="text-red-500 text-[13px] italic -mt-2">
-                Vui lòng nhập dữ liệu cho trường này.
+                Vui lòng nhập số điện thoại của bạn.
               </span>
             )}
 
@@ -196,7 +213,7 @@ export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
             </div>
 
             {/* Radio: Hình thức thanh toán */}
-            <div className="flex items-center justify-center gap-8 mt-4 mb-6">
+            <div className="flex items-center justify-center gap-8 mt-4 mb-2">
               <label className="flex items-center gap-2 cursor-pointer text-[15px] text-gray-700">
                 <input
                   type="radio"
@@ -219,6 +236,44 @@ export default function QuoteModal({ isOpen, onClose }: QuoteModalProps) {
                 />
                 Trả thẳng
               </label>
+            </div>
+
+            {/* Checkbox: Đồng ý chính sách */}
+            <div className="flex flex-col gap-1 mb-2">
+              <div className="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  id="policy-agreement"
+                  checked={isAgreed}
+                  onChange={(e) => {
+                    setIsAgreed(e.target.checked);
+                    if (agreementError) setAgreementError(false);
+                  }}
+                  className={`mt-1 w-4 h-4 text-[#3b66ff] focus:ring-[#3b66ff] rounded cursor-pointer shrink-0 ${agreementError ? "border-red-500" : ""}`}
+                />
+                <label
+                  htmlFor="policy-agreement"
+                  className="text-[13px] text-gray-600 leading-relaxed cursor-pointer select-none"
+                >
+                  Tôi đồng ý cho phép VinFast 68 Trịnh Văn Bô xử lý dữ liệu cá
+                  nhân của tôi và các thông tin khác do tôi cung cấp cho mục
+                  đích và theo phương thức được mô tả chi tiết tại{" "}
+                  <Link
+                    href="/privacy_policy"
+                    target="_blank"
+                    className="text-[#3b66ff] hover:underline"
+                  >
+                    Chính sách bảo mật thông tin cá nhân
+                  </Link>
+                  .
+                </label>
+              </div>
+              {agreementError && (
+                <span className="text-red-500 text-[13px] italic ml-6">
+                  Vui lòng đồng ý với chính sách bảo mật trước khi gửi thông
+                  tin.
+                </span>
+              )}
             </div>
 
             {/* Button Gửi */}
