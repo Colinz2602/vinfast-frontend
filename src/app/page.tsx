@@ -1,37 +1,53 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Navbutton from "./components/navbutton";
 import Slider from "./components/slider";
 import CarList from "./components/cars_list";
 import Experience from "./components/experience";
 
-const API_URL =
-  process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://127.0.0.1:1337";
+export default function Home() {
+  const [data, setData] = useState<any>({
+    sliders: null,
+    cars: null,
+    experience: null,
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
-async function getHomeData() {
-  const [sliderRes, carsRes, expRes] = await Promise.all([
-    fetch(`${API_URL}/api/sliders?populate=*`, {
-      next: { revalidate: 60 },
-    }),
-    // Đưa query về populate=* cơ bản, vì có revalidate: 60 nên không sợ quá tải database nữa
-    fetch(
-      `${API_URL}/api/cars?fields[0]=name&fields[1]=slug&fields[2]=starting_price&fields[3]=is_featured&populate[thumbnail][fields][0]=url&populate[car_type][fields][0]=name&populate[car_type][fields][1]=order`,
-      {
-        next: { revalidate: 60 },
-      },
-    ),
-    fetch(`${API_URL}/api/experience?populate[experience][populate]=*`, {
-      next: { revalidate: 60 },
-    }),
-  ]);
+  useEffect(() => {
+    const fetchHomeData = async () => {
+      try {
+        const API_URL =
+          process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://127.0.0.1:1337";
+        const [sliderRes, carsRes, expRes] = await Promise.all([
+          // Vẫn khuyên bạn nên dùng query fields/populate cụ thể ở đây để tối ưu RAM nhất có thể
+          fetch(`${API_URL}/api/sliders?populate=*`),
+          fetch(`${API_URL}/api/cars?populate=*`),
+          fetch(`${API_URL}/api/experience?populate[experience][populate]=*`),
+        ]);
 
-  return {
-    sliders: await sliderRes.json(),
-    cars: await carsRes.json(),
-    experience: await expRes.json(),
-  };
-}
+        setData({
+          sliders: await sliderRes.json(),
+          cars: await carsRes.json(),
+          experience: await expRes.json(),
+        });
+      } catch (error) {
+        console.error("Lỗi khi tải dữ liệu trang chủ:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-export default async function Home() {
-  const data = await getHomeData();
+    fetchHomeData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        Đang tải thông tin...
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 text-gray-900">

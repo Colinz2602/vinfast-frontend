@@ -108,7 +108,7 @@ const Footer: React.FC<FooterProps> = ({ settings }) => {
             <div className="flex flex-col w-full md:w-auto">
               <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-4">
                 <a
-                  href="#"
+                  href="/"
                   className="hover:text-white uppercase transition-colors"
                 >
                   Trang chủ
