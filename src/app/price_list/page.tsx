@@ -2,8 +2,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Navbar from "@/app/components/navbar";
-import Footer from "@/app/components/footer";
 
 interface CarVersion {
   name: string;
@@ -27,9 +25,15 @@ export default function PriceListPage() {
       try {
         const API_URL =
           process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
-        const res = await fetch(
-          `${API_URL}/api/cars?populate=*&pagination[pageSize]=100`,
-        );
+
+        const query = new URLSearchParams({
+          "fields[0]": "name",
+          "fields[1]": "starting_price",
+          "fields[2]": "version",
+          "populate[car_type][fields][0]": "name",
+          "pagination[pageSize]": "100",
+        }).toString();
+        const res = await fetch(`${API_URL}/api/cars?${query}`);
         const data = await res.json();
 
         const fetchedCars: CarData[] = data.data.map((item: any) => {

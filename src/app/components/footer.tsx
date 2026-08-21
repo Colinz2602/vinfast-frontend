@@ -3,13 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { Mail, Phone } from "lucide-react";
 
-interface GlobalSetting {
-  hotline: string;
-  showroom: string;
-  address: string;
-  email: string;
-  disclaimer?: string;
-}
 interface FooterProps {
   settings?: any;
 }

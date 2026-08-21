@@ -3,8 +3,6 @@
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import Navbar from "@/app/components/navbar";
-import Footer from "@/app/components/footer";
 import {
   ChevronLeft,
   ChevronRight,

@@ -12,9 +12,12 @@ async function getHomeData() {
       next: { revalidate: 60 },
     }),
     // Đưa query về populate=* cơ bản, vì có revalidate: 60 nên không sợ quá tải database nữa
-    fetch(`${API_URL}/api/cars?populate=*`, {
-      next: { revalidate: 60 },
-    }),
+    fetch(
+      `${API_URL}/api/cars?fields[0]=name&fields[1]=slug&fields[2]=starting_price&fields[3]=is_featured&populate[thumbnail][fields][0]=url&populate[car_type][fields][0]=name&populate[car_type][fields][1]=order`,
+      {
+        next: { revalidate: 60 },
+      },
+    ),
     fetch(`${API_URL}/api/experience?populate[experience][populate]=*`, {
       next: { revalidate: 60 },
     }),
